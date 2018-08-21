@@ -1,4 +1,21 @@
 <?php
+function get_formatted_data($text,$formatted)
+{
+    $return 	 = [];
+    $date_format = 'F m, Y';
+    foreach($formatted as $t)
+    {
+        switch($t['tag'])
+        {
+            case 'date':
+                $return[] = str_replace($t['pre_formatted'], date($date_format,strtotime($t['text'])), $text);
+                break;
+            default:
+        }
+    }
+    return implode(' ',$return);
+}
+
 function get_data_tag($input,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
 {
     $regex = '~'.$start_tag[0].'(.*?)'.$start_tag[1].'(.*?)'.$end_tag[0].'(.*?)'.$end_tag[1].'~';
@@ -14,8 +31,6 @@ function get_data_tag($input,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
                  $_tmp[$j][$_tmp_map[$i]] = $output[$i][$j];
           }
     }
-    
-  
  
     return $_tmp;
 }

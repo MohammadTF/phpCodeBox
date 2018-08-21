@@ -16,7 +16,7 @@ function get_formatted_data($text,$formatted)
     return implode(' ',$return);
 }
 
-function get_data_tag($input,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
+function get_data_tag($input,$return = false,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
 {
     $regex = '~'.$start_tag[0].'(.*?)'.$start_tag[1].'(.*?)'.$end_tag[0].'(.*?)'.$end_tag[1].'~';
     preg_match_all($regex, $input, $output);
@@ -31,6 +31,9 @@ function get_data_tag($input,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
                  $_tmp[$j][$_tmp_map[$i]] = $output[$i][$j];
           }
     }
- 
+    if($return)
+    {
+        return self::get_formatted_data($input,$_tmp);
+    }
     return $_tmp;
 }

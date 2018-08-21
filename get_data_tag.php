@@ -1,39 +1,44 @@
 <?php
-function get_formatted_data($text,$formatted)
+class MarkupTag
 {
-    $return 	 = [];
-    $date_format = 'F m, Y';
-    foreach($formatted as $t)
-    {
-        switch($t['tag'])
-        {
-            case 'date':
-                $return[] = str_replace($t['pre_formatted'], date($date_format,strtotime($t['text'])), $text);
-                break;
-            default:
-        }
-    }
-    return implode(' ',$return);
-}
+    const DATE_FORMAT  = 'F m, Y';
+    const TMP_MAP      = ['pre_formatted','tag','text','end_tag'];
 
-function get_data_tag($input,$return = false,$start_tag = ['<%','%>'],$end_tag = ['<%-','-%>'])
-{
-    $regex = '~'.$start_tag[0].'(.*?)'.$start_tag[1].'(.*?)'.$end_tag[0].'(.*?)'.$end_tag[1].'~';
-    preg_match_all($regex, $input, $output);
-    $count_matches = count($output);
-    $num_matches   = count($output[0]);
-    $_tmp          = [];
-    $_tmp_map      = ['pre_formatted','tag','text','end_tag'];
-    for($i=0;$i<$count_matches;$i++)
+    public static function get_formatted_data($text, $formatted)
     {
-          for($j=0;$j<$num_matches;$j++)
-          {
-                 $_tmp[$j][$_tmp_map[$i]] = $output[$i][$j];
-          }
+        $return 	 = [];
+        foreach ($formatted as $t) {
+            switch ($t['tag']) {
+                case 'date':
+                    $return[] = str_replace($t['pre_formatted'], date(self::DATE_FORMAT, strtotime($t['text'])), $text);
+                    break;
+                default:
+            }
+        }
+        return implode(' ', $return);
     }
-    if($return)
+    
+
+    public static function get_data_tag($input, $return = false, $start_tag = ['<<','>>'], $end_tag = ['<<-','->>'])
     {
-        return self::get_formatted_data($input,$_tmp);
+        $regex = '~'.$start_tag[0].'(.*?)'.$start_tag[1].'(.*?)'.$end_tag[0].'(.*?)'.$end_tag[1].'~';
+        preg_match_all($regex, $input, $output);
+       
+        $count_matches = count($output);
+        $num_matches   = count($output[0]);
+        $_tmp          = [];
+        
+       
+        for ($i=0;$i<$count_matches;$i++) {
+            for ($j=0;$j<$num_matches;$j++) {
+                $_tmp[$j][self::TMP_MAP[$i]] = $output[$i][$j];
+            }
+        }
+       
+        if ($return) {
+            return self::get_formatted_data($input, $_tmp);
+        }
+       
+        return $_tmp;
     }
-    return $_tmp;
 }
